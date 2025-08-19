@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Text to PDF Converter</title>
+    <!-- Include jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        background: #f4f4f4;
+        padding: 20px;
+      }
+      textarea {
+        width: 100%;
+        max-width: 600px;
+        height: 250px;
+        padding: 10px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        font-size: 16px;
+      }
+      button {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #0056b3;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Convert Text to PDF</h2>
+    <textarea id="textInput" placeholder="Enter your text here..."></textarea>
+    <button onclick="generatePDF()">Download as PDF</button>
+
+    <script>
+      async function generatePDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        let text = document.getElementById("textInput").value;
+        if (!text.trim()) {
+          alert("Please enter some text first!");
+          return;
+        }
+
+        // Page settings
+        let pageHeight = doc.internal.pageSize.height;
+        let margin = 10;
+        let lineHeight = 10;
+        let y = margin;
+
+        // Split long text into lines that fit the page width
+        let lines = doc.splitTextToSize(text, 180);
+
+        for (let i = 0; i < lines.length; i++) {
+          if (y + lineHeight > pageHeight - margin) {
+            doc.addPage();
+            y = margin;
+          }
+          doc.text(lines[i], margin, y);
+          y += lineHeight;
+        }
+
+        doc.save("output.pdf");
+      }
+    </script>
+  </body>
+</html>
